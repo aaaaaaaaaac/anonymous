@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anonymous</title>
+    <link rel="stylesheet" href="./static/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;1,300&family=Madimi+One&display=swap"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        listing();
+      });
+      function listing() {
+        $.ajax({
+          type: "GET",
+          url: "/posts",
+          data: {},
+          success: function (response) {
+            let posts = response.posts; // Retrieve the posts array from the response
+            let outputDiv = document.getElementById("output");
+
+            // Clear previous content
+            outputDiv.innerHTML = "";
+
+            // Loop through each post and create HTML elements to display them
+            posts.forEach(function (post) {
+              // Create a new container for each post
+              let container = document.createElement("div");
+              container.classList.add("container");
+
+              // Set the inner HTML for the new container
+              container.innerHTML = `
+          <img src="${post.image}" alt="" />
+          <div class="content">
+            <div class="heading">${post.title}</div>
+            <div class="category">${post.category}</div>
+            <div class="article">${post.description}</div>
+          </div>
+        `;
+
+              // Append the new container to the output area
+              outputDiv.appendChild(container);
+            });
+          },
+        });
+      }
+
+      function posting() {
+        let url = $("#url").val();
+        let head = $("#heading").val();
+        let Catg = $("#category").val();
+        let para = $("#article").val();
+
+        $.ajax({
+          type: "POST",
+          url: "/posts",
+          data: {
+            url_give: url,
+            head_give: head,
+            category_give: Catg,
+            para_give: para,
+          },
+          success: function (response) {
+            response["msg"];
+            window.location.reload();
+          },
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <!-- NAve bar -->
+    <div class="nav">
+      <div class="rand">
+        <div class="ele">Home</div>
+        <div class="ele">Filter</div>
+        <div class="ele">Write</div>
+        <div class="ele">Read</div>
+        <div class="ele">Category</div>
+      </div>
+      <div class="register">
+        <div class="login">Login</div>
+        <div class="SignUp">Sign Up</div>
+      </div>
+    </div>
+    <!-- Input -->
+    <div class="input">
+      <form id="myForm" action="/posts" method="POST">
+        <label for="url">Image Url:</label>
+        <input id="url" name="url_give" placeholder="jpg/png/svg" />
+        <label for="heading">Heading:</label>
+        <input
+          id="heading"
+          name="head_give"
+          placeholder="Topic of your Passage"
+        />
+        <label for="category">Category:</label>
+        <select id="category" name="category_give">
+          <option value="Experience">Experience</option>
+          <option value="Confession">Confession</option>
+          <option value="Article">Article</option>
+        </select>
+        <textarea
+          id="article"
+          name="para_give"
+          placeholder="Your Passage"
+        ></textarea>
+        <button type="submit" onclick="posting()">Submit</button>
+      </form>
+    </div>
+    <!-- Post -->
+    <div class="postposting" id="output"></div>
+  </body>
+</html>
